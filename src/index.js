@@ -2,20 +2,51 @@ const fs = require('fs');
 const https = require('https');
 const url = require('url');
 const chalk = require('chalk');
+const ora = require('ora');
 const figures = require('figures');
 const { randomHeader } = require('../util/setting');
-const { threeEighths } = require('figures');
+const schemaUtils = require('schema-utils');
+const schema = require('./schema');
 
 module.exports = class ImgCompressPlugin {
   constructor(opts) {
     this.opts = opts;
   }
 
-  apply(compiler) {}
+  apply(compiler) {
+    const pluginName = 'img-compress-plugin';
+    const { enabled, logged } = this.opts;
+    schemaUtils(schema, this.opts, { name: pluginName });
+    enabled &&
+      compiler.hooks.emit.tap(pluginName, (compilation) => {
+        const imgs = Object.keys(compilation.assets).filter((img) =>
+          /.png|jpg/.test(img)
+        );
+        if (!imgs.length) return Promise.resolve();
+        const promises = imgs.map((img) =>
+          this.compressImg(compilation.assets, img)
+        );
+        const spinner = ora('Image is compressing...').start();
+        return Promise.all(promises).then((res) => {
+          spinner.stop();
+          logged && res.forEach((v) => console.log(v));
+        });
+      });
+  }
   async compressImg(assets, path) {
     try {
       const file = assets[path].source();
       const obj = await this.uploadImg(file);
+      const data = await this.downloadImg(obj.output.url);
+      const oldSize = chalk.redBright(obj.input.size);
+      const newSize = chalk.greenBright(obj.output.size);
+      const ratio = chalk.blueBright(obj.output.ratio);
+      const dPath = assets[path].existsAt;
+      const msg = `${figures.tick} Compressed [${chalk.yellowBright(
+        dPath
+      )}] completed : Old Size: ${oldSize} , New Size: ${newSize}, Optimize Ration: ${ratio}`;
+      fs.writeFileSync(dPath, data, 'binary');
+      return Promise.resolve(msg);
     } catch (err) {
       const msg = `${figures.cross} Compressed [${chalk.yellowBright(
         path
