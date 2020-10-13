@@ -22,6 +22,7 @@ module.exports = class ImgCompressPlugin {
         const imgs = Object.keys(compilation.assets).filter((img) =>
           /.png|jpg/.test(img)
         );
+        console.log('执行了');
         if (!imgs.length) return Promise.resolve();
         const promises = imgs.map((img) =>
           this.compressImg(compilation.assets, img)

@@ -1,3 +1,2 @@
 const net = require('./net.png');
-
-module.exports = net;
+console.log('webpack test');
