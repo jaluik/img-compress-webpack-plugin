@@ -22,16 +22,19 @@ module.exports = class ImgCompressPlugin {
         const imgs = Object.keys(compilation.assets).filter((img) =>
           /.png|jpg/.test(img)
         );
-        console.log('执行了');
         if (!imgs.length) return Promise.resolve();
         const promises = imgs.map((img) =>
           this.compressImg(compilation.assets, img)
         );
         const spinner = ora('Image is compressing...').start();
-        return Promise.all(promises).then((res) => {
-          spinner.stop();
-          logged && res.forEach((v) => console.log(v));
-        });
+        return Promise.all(promises)
+          .then((res) => {
+            spinner.stop();
+            logged && res.forEach((v) => console.log(v));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       });
   }
   async compressImg(assets, path) {
@@ -44,11 +47,12 @@ module.exports = class ImgCompressPlugin {
       const ratio = chalk.blueBright(obj.output.ratio);
       const dPath = assets[path].existsAt;
       const msg = `${figures.tick} Compressed [${chalk.yellowBright(
-        dPath
+        path
       )}] completed : Old Size: ${oldSize} , New Size: ${newSize}, Optimize Ration: ${ratio}`;
       fs.writeFileSync(dPath, data, 'binary');
       return Promise.resolve(msg);
     } catch (err) {
+      console.log(err);
       const msg = `${figures.cross} Compressed [${chalk.yellowBright(
         path
       )}] failed: ${chalk.redBright(err)}`;
@@ -60,7 +64,7 @@ module.exports = class ImgCompressPlugin {
     return new Promise((resolve, reject) => {
       const req = https.request(opts, (res) => {
         res.on('data', (data) => {
-          const obj = JSON.stringify(data.toString());
+          const obj = JSON.parse(data.toString());
           obj.error ? reject(obj.message) : resolve(obj);
         });
       });

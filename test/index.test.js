@@ -7,7 +7,7 @@ describe('Plugin', () => {
   beforeEach((done) => {
     rmRf(OUTPUT_DIR, done);
   });
-  it('should a good plugin', async (done) => {
+  it('should work to compress', async (done) => {
     const ImgCompressWebpackPlugin = require('img-compress-webpack-plugin');
     const webpackConfig = {
       entry: {
