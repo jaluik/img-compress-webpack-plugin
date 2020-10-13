@@ -14,7 +14,7 @@ module.exports = class ImgCompressPlugin {
   }
 
   apply(compiler) {
-    const pluginName = 'img-compress-plugin';
+    const pluginName = 'img-compress-webpack-plugin';
     const { enabled, logged } = this.opts;
     schemaUtils(schema, this.opts, { name: pluginName });
     enabled &&
