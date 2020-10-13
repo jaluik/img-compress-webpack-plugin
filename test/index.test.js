@@ -1,21 +1,36 @@
-const ImgCompressPlugin = require('../src/index');
 const fs = require('fs');
+const webpack = require('webpack');
 const path = require('path');
+const OUTPUT_DIR = path.join(__dirname, './tmp');
 
-test('it can upload a img', async (done) => {
-  const file = fs.readFileSync(path.resolve(__dirname, 'net.png'), 'binary');
-  res = await new ImgCompressPlugin().uploadImg(file);
-  data = JSON.parse(res);
-  done();
-  expect(res.url).not.toBeNull();
-});
-
-test('it can download a img', async (done) => {
-  const fileUrl =
-    'https://tinypng.com/web/output/9nutf37pek39dzj7dvx7ywc11qdufrqe';
-  const file = await new ImgCompressPlugin().downloadImg(fileUrl);
-  console.log(file);
-  fs.writeFileSync(path.resolve(__dirname, '../net.png'), file, 'binary');
-  done();
-  expect(file).not.toBeNull();
+test('a good plugin', async (done) => {
+  const ImgCompressWebpackPlugin = require('../src/index');
+  const webpackConfig = {
+    entry: {
+      one: path.join(__dirname, 'src/index.js'),
+    },
+    output: {
+      path: OUTPUT_DIR,
+      filename: 'bundle.js',
+    },
+    module: {
+      rules: [
+        {
+          test: /\.(jpe?g|png)$/,
+          use: [{ loader: 'url-loader' }],
+        },
+      ],
+    },
+    plugins: [
+      new ImgCompressWebpackPlugin({
+        enabled: true,
+        logged: true,
+      }),
+    ],
+  };
+  webpack(webpackConfig, (err, stat) => {
+    done();
+    console.log(err);
+    expect(err).toBeNull();
+  });
 });

@@ -5,7 +5,7 @@ const chalk = require('chalk');
 const ora = require('ora');
 const figures = require('figures');
 const { randomHeader } = require('../util/setting');
-const schemaUtils = require('schema-utils');
+const { validate } = require('schema-utils');
 const schema = require('./schema');
 
 module.exports = class ImgCompressPlugin {
@@ -16,7 +16,7 @@ module.exports = class ImgCompressPlugin {
   apply(compiler) {
     const pluginName = 'img-compress-webpack-plugin';
     const { enabled, logged } = this.opts;
-    schemaUtils(schema, this.opts, { name: pluginName });
+    validate(schema, this.opts, { name: pluginName });
     enabled &&
       compiler.hooks.emit.tap(pluginName, (compilation) => {
         const imgs = Object.keys(compilation.assets).filter((img) =>
@@ -79,7 +79,7 @@ module.exports = class ImgCompressPlugin {
         res.on('data', (chunk) => (file += chunk));
         res.on('end', () => resolve(file));
       });
-      req.on('error', (error) => reject('error'));
+      req.on('error', (error) => reject(error));
       req.end();
     });
   }
