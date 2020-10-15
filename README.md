@@ -7,7 +7,9 @@
 ### install(安装)
 
 `npm i -D img-compress-webpack-plugin`
+
 或
+
 `yarn add -D img-compress-webpack-plugin`
 
 ### config(配置)
