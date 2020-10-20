@@ -1,6 +1,6 @@
 {
   "name": "img-compress-webpack-plugin",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "src/index.js",
   "scripts": {
     "test": "jest"
@@ -40,6 +40,7 @@
     "tinypng"
   ],
   "homepage": "https://github.com/jaluik",
+  "description": "A lightweight webpack plugin that uses the excellent compression algorithm of the tinypng website to compress the image",
   "repository": {
     "type": "git",
     "url": "https://github.com/jaluik/img-compress-webpack-plugin"
