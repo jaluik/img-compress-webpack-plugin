@@ -4,11 +4,14 @@ const rmRf = require('rimraf');
 const OUTPUT_DIR = path.join(__dirname, './tmp');
 
 describe('Plugin', () => {
-  beforeEach((done) => {
+  afterAll((done) => {
     rmRf(OUTPUT_DIR, done);
   });
   it('should work to compress', async (done) => {
-    const ImgCompressWebpackPlugin = require('img-compress-webpack-plugin');
+    const ImgCompressWebpackPlugin = require(path.resolve(
+      __dirname,
+      '../src/index.js'
+    ));
     const webpackConfig = {
       entry: {
         one: path.join(__dirname, 'src/index.js'),
@@ -42,6 +45,7 @@ describe('Plugin', () => {
     webpack(webpackConfig, (err, stat) => {
       done();
       expect(err).toBeNull();
+      expect(stat.hasErrors()).toBeFalsy();
     });
-  });
+  }, 30000);
 });

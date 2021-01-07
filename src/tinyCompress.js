@@ -4,6 +4,7 @@ const url = require('url');
 const chalk = require('chalk');
 const figures = require('figures');
 const { randomHeader } = require('../util/setting');
+const { RawSource } = require('webpack-sources');
 
 class Compressor {
   async compressImg(assets, path) {
@@ -14,11 +15,11 @@ class Compressor {
       const oldSize = chalk.redBright(obj.input.size);
       const newSize = chalk.greenBright(obj.output.size);
       const ratio = chalk.blueBright(obj.output.ratio);
-      const dPath = assets[path].existsAt;
+      assets[path] = new RawSource(Buffer.alloc(data.length, data, 'binary'));
       const msg = `${figures.tick} Compressed [${chalk.yellowBright(
         path
       )}] completed : Old Size: ${oldSize} , New Size: ${newSize}, Optimize Ration: ${ratio}`;
-      fs.writeFileSync(dPath, data, 'binary');
+      console.log('assets[path]', assets[path]);
       return Promise.resolve(msg);
     } catch (err) {
       console.log(err);

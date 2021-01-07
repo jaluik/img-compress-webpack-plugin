@@ -14,23 +14,22 @@ module.exports = class ImgCompressPlugin {
     const { enabled, logged } = this.opts;
     validate(schema, this.opts, { name: pluginName });
     enabled &&
-      compiler.hooks.emit.tap(pluginName, (compilation) => {
+      compiler.hooks.emit.tapPromise(pluginName, async (compilation) => {
         const imgs = Object.keys(compilation.assets).filter((img) =>
           /.png|jpg/.test(img)
         );
-        if (!imgs.length) return Promise.resolve();
+        if (!imgs.length) return;
         const promises = imgs.map((img) =>
           this.compressor.compressImg(compilation.assets, img)
         );
         const spinner = ora('Image is compressing...').start();
-        return Promise.all(promises)
-          .then((res) => {
-            spinner.stop();
-            logged && res.forEach((v) => console.log(v));
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        try {
+          const res = await Promise.all(promises);
+          spinner.stop();
+          logged && res.forEach((v) => console.log(v));
+        } catch (err) {
+          console.log(err);
+        }
       });
   }
 };
