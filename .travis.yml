@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - lts/*
+deploy:
+  provider: npm
+  email: cqzhengmouren@gmail.com
+  api_key: '$NPM_TOKEN'
+  on:
+    tags: true
+    repo: jaluik/img-compress-webpack-plugin
+  skip_cleanup: 'true'
